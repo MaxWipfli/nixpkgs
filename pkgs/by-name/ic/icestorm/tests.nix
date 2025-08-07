@@ -25,5 +25,14 @@ runCommand "${pname}-test-examples"
     for example in examples/*; do
       make -C $example
     done
+
+    # smoke test icebox_vlog manually
+    pushd examples/icestick
+    set -x
+    icebox_vlog -p icestick.pcf example.asc > example_out.v
+    grep "^module chip" example_out.v
+    set +x
+    popd
+
     touch $out
   ''
