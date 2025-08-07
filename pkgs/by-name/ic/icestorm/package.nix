@@ -12,10 +12,6 @@
   # IceStorm isn't intended to be used as a library other than by the nextpnr
   # build process (which is also sped up by using PyPy), so we use it by default.
   # See 18839e1 for more details.
-  #
-  # FIXME(aseipp, 3/1/2021): pypy seems a bit busted since stdenv upgrade to gcc
-  # 10/binutils 2.34, so short-circuit this for now in passthru below (done so
-  # that downstream overrides can't re-enable pypy and break their build somehow)
   usePyPy ? stdenv.hostPlatform.system == "x86_64-linux",
 }:
 
@@ -24,7 +20,7 @@ stdenv.mkDerivation (finalAttrs: {
   version = "0-unstable-2025-06-03";
 
   passthru = rec {
-    pythonPkg = if (false && usePyPy) then pypy3 else python3;
+    pythonPkg = if usePyPy then pypy3 else python3;
     pythonInterp = pythonPkg.interpreter;
 
     tests.examples = callPackage ./tests.nix {
