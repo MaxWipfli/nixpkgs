@@ -16363,6 +16363,12 @@
     githubId = 43796009;
     name = "Max Wilson";
   };
+  MaxWipfli = {
+    email = "mail@maxwipfli.ch";
+    github = "MaxWipfli";
+    githubId = 17591869;
+    name = "Max Wipfli";
+  };
   maxxk = {
     email = "maxim.krivchikov@gmail.com";
     github = "maxxk";
