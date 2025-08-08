@@ -1,20 +1,16 @@
 {
   lib,
-  mkDerivation,
   fetchFromGitHub,
   python3,
   ruby,
-  qtbase,
-  qtmultimedia,
-  qttools,
-  qtxmlpatterns,
+  libsForQt5,
   which,
   perl,
   libgit2,
   stdenv,
 }:
 
-mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "klayout";
   version = "0.30.4-1";
 
@@ -31,6 +27,7 @@ mkDerivation rec {
   '';
 
   nativeBuildInputs = [
+    libsForQt5.wrapQtAppsHook
     which
     perl
     python3
@@ -38,10 +35,10 @@ mkDerivation rec {
   ];
 
   buildInputs = [
-    qtbase
-    qtmultimedia
-    qttools
-    qtxmlpatterns
+    libsForQt5.qtbase
+    libsForQt5.qtmultimedia
+    libsForQt5.qttools
+    libsForQt5.qtxmlpatterns
     libgit2
   ];
 
