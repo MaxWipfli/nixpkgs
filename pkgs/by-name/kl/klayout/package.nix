@@ -22,7 +22,6 @@ stdenv.mkDerivation rec {
   };
 
   postPatch = ''
-    substituteInPlace src/klayout.pri --replace "-Wno-reserved-user-defined-literal" ""
     patchShebangs .
   '';
 
@@ -45,7 +44,7 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     runHook preBuild
     mkdir -p $out/lib
-    ./build.sh -qt5 -prefix $out/lib -option -j$NIX_BUILD_CORES
+    ./build.sh -prefix $out/lib -option -j$NIX_BUILD_CORES
     runHook postBuild
   '';
 
@@ -73,13 +72,7 @@ stdenv.mkDerivation rec {
     wrapQtApp "$out/Applications/klayout.app/Contents/MacOS/klayout"
   '';
 
-  env.NIX_CFLAGS_COMPILE = toString [ "-Wno-parentheses" ];
-
   dontInstall = true; # Installation already happens as part of "build.sh"
-
-  # Fix: "gsiDeclQMessageLogger.cc:126:42: error: format not a string literal
-  # and no format arguments [-Werror=format-security]"
-  hardeningDisable = [ "format" ];
 
   meta = {
     description = "High performance layout viewer and editor with support for GDS and OASIS";
