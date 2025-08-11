@@ -41,20 +41,33 @@ stdenv.mkDerivation rec {
     libgit2
   ];
 
-  buildPhase = ''
-    runHook preBuild
+  # explicitly set tool paths (qmake, python, ruby) to avoid auto-discovery which may find a non-Nix
+  # version in $PATH first (if not building in the sandbox)
+  configurePhase = ''
+    runHook preConfigure
     mkdir -p $out/lib
-    ./build.sh -prefix $out/lib -option -j$NIX_BUILD_CORES
-    runHook postBuild
+
+    ./build.sh \
+      -prefix $out/lib \
+      -qmake ${libsForQt5.qtbase.dev}/bin/qmake \
+      -python ${python3}/bin/python3 \
+      -ruby ${ruby}/bin/ruby \
+      -dry-run
+
+    cd build-*
+    runHook postConfigure
   '';
 
-  postBuild =
+  enableParallelBuilding = true;
+
+  # installPhase: `make install`, but everything goes into $out/lib/ as specified
+  postInstall =
     lib.optionalString stdenv.hostPlatform.isLinux ''
       mkdir $out/bin
-
-      install -Dm444 etc/klayout.desktop -t $out/share/applications
-      install -Dm444 etc/logo.png $out/share/icons/hicolor/256x256/apps/klayout.png
       mv $out/lib/klayout $out/bin/
+
+      install -Dm444 ../etc/klayout.desktop -t $out/share/applications
+      install -Dm444 ../etc/logo.png $out/share/icons/hicolor/256x256/apps/klayout.png
     ''
     + lib.optionalString stdenv.hostPlatform.isDarwin ''
       mkdir -p $out/Applications
@@ -71,8 +84,6 @@ stdenv.mkDerivation rec {
 
     wrapQtApp "$out/Applications/klayout.app/Contents/MacOS/klayout"
   '';
-
-  dontInstall = true; # Installation already happens as part of "build.sh"
 
   meta = {
     description = "High performance layout viewer and editor with support for GDS and OASIS";
