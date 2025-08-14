@@ -25,13 +25,6 @@ let
   pname = "nextpnr";
   version = "0.8";
 
-  prjxray_src = fetchFromGitHub {
-    owner = "f4pga";
-    repo = "prjxray";
-    rev = "faf9c774a340e39cf6802d009996ed6016e63521";
-    hash = "sha256-BEv7vJoOHWHZoc9EXbesfwFFClkuiSpVwHUrj4ahUcA=";
-  };
-
   prjbeyond_src = fetchFromGitHub {
     owner = "YosysHQ-GmbH";
     repo = "prjbeyond-db";
@@ -79,8 +72,7 @@ stdenv.mkDerivation rec {
       "-DTRELLIS_INSTALL_PREFIX=${trellis}"
       "-DTRELLIS_LIBDIR=${trellis}/lib/trellis"
       "-DUSE_OPENMP=ON"
-      "-DHIMBAECHEL_UARCH=all"
-      "-DHIMBAECHEL_PRJXRAY_DB=${prjxray_src}"
+      "-DHIMBAECHEL_UARCH=example;gowin;ng-ultra"
       "-DHIMBAECHEL_PRJBEYOND_DB=${prjbeyond_src}"
     ]
     ++ (lib.optional enableGui "-DBUILD_GUI=ON");
