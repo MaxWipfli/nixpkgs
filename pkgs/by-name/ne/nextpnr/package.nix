@@ -68,7 +68,7 @@ stdenv.mkDerivation rec {
     let
       # the specified version must always start with "nextpnr-", so add it if
       # missing (e.g. if the user overrides with a git hash)
-      rev = src.rev;
+      rev = lib.removePrefix "refs/tags/" src.rev;
       version = if (lib.hasPrefix "nextpnr-" rev) then rev else "nextpnr-${rev}";
     in
     [
@@ -78,10 +78,8 @@ stdenv.mkDerivation rec {
       "-DICESTORM_INSTALL_PREFIX=${icestorm}"
       "-DTRELLIS_INSTALL_PREFIX=${trellis}"
       "-DTRELLIS_LIBDIR=${trellis}/lib/trellis"
-      "-DGOWIN_BBA_EXECUTABLE=${python3Packages.apycula}/bin/gowin_bba"
       "-DUSE_OPENMP=ON"
       "-DHIMBAECHEL_UARCH=all"
-      "-DHIMBAECHEL_GOWIN_DEVICES=all"
       "-DHIMBAECHEL_PRJXRAY_DB=${prjxray_src}"
       "-DHIMBAECHEL_PRJBEYOND_DB=${prjbeyond_src}"
     ]
