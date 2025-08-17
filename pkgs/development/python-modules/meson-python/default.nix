@@ -2,6 +2,7 @@
   lib,
   stdenv,
   buildPythonPackage,
+  isPyPy,
   fetchPypi,
   fetchpatch,
   pythonOlder,
@@ -70,6 +71,13 @@ buildPythonPackage rec {
       ''
     else
       null;
+
+  disabledTests = lib.optionals isPyPy [
+    # PyPy may print "Warning: cannot find your CPU L2 & L3 cache size [...]" to STDERR before any
+    # other output, violating the test's assumption that what it is looking for (the string
+    # "Just testing") is the first line of STDERR.
+    "test_get_meson_command_error"
+  ];
 
   setupHooks = [ ./add-build-flags.sh ];
 
