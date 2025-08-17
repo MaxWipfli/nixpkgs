@@ -8,6 +8,7 @@
   pythonOlder,
   buildPythonPackage,
   writeTextFile,
+  isPyPy,
 
   # build-system
   cython,
@@ -141,6 +142,11 @@ buildPythonPackage rec {
   ++ lib.optionals (pythonAtLeast "3.13") [
     # https://github.com/numpy/numpy/issues/26713
     "test_iter_refcount"
+  ]
+  ++ lib.optionals isPyPy [
+    # https://github.com/numpy/numpy/issues/28469, https://github.com/pypy/pypy/issues/5247
+    # FIXME: This is fixed in PyPy v7.3.20, remove once we update to that.
+    "test_pointer"
   ]
   ++ lib.optionals stdenv.hostPlatform.isAarch32 [
     # https://github.com/numpy/numpy/issues/24548
