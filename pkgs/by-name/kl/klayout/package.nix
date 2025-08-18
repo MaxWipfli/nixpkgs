@@ -60,6 +60,27 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
+  doCheck = stdenv.hostPlatform.isLinux;
+  checkPhase =
+    let
+      disabledTests = [
+        # all these tests fail due to differently formatted output between Ruby versions
+        "rbaTests:basic"
+        "rbaTests:dbInstanceTest"
+        "rbaTests:dbLayoutTests1"
+        "rbaTests:dbNetlistReaderTests"
+        "rbaTests:dbShapesTest"
+      ];
+      disabledTestsArgs = lib.concatMapStringsSep " " (test: "-x=${test}") disabledTests;
+    in
+    ''
+      export LD_LIBRARY_PATH="$PWD:$LD_LIBRARY_PATH"
+      export DYLD_LIBRARY_PATH="$PWD:$DYLD_LIBRARY_PATH"
+      export TESTSRC="$PWD/.."
+      export TESTTMP="$PWD/tmp"
+      ./ut_runner ${disabledTestsArgs}
+    '';
+
   # installPhase: `make install`, but everything goes into $out/lib/ as specified
   postInstall =
     lib.optionalString stdenv.hostPlatform.isLinux ''
